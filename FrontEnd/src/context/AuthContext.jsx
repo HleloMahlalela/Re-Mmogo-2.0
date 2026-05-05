@@ -10,7 +10,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) {
-      setUser(JSON.parse(stored));
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
     setLoading(false);
   }, []);

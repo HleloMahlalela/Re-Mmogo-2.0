@@ -17,5 +17,15 @@ export default defineConfig([
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      // Standard fetch-on-mount patterns use setState inside effects.
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
+  {
+    files: ['**/context/**/*.{js,jsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

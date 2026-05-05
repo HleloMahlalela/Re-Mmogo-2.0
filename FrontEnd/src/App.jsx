@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-/* import ProtectedRoute from "./components/ProtectedRoute"; */
+import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Groups from "./pages/Groups";
@@ -21,7 +21,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-        {/*   <Route element={<ProtectedRoute />}> */}
+          <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/groups" element={<Groups />} />
             <Route path="/groups/:groupId" element={<GroupDetail />} />
@@ -32,7 +32,7 @@ export default function App() {
             <Route path="/reports" element={<ReportsHome />} />
             <Route path="/groups/:groupId/reports" element={<Reports />} />
             <Route path="/approvals" element={<Approvals />} />
-         {/*  </Route> */}
+          </Route>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

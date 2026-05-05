@@ -12,6 +12,15 @@ body {
   background: #f7faf7;
 }
 
+.status-msg {
+  margin: 2rem auto;
+  max-width: 28rem;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  color: #3d5a40;
+  font-size: 0.95rem;
+}
+
 a {
   text-decoration: none;
   color: inherit;

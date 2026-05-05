@@ -1,5 +1,5 @@
 {
-  "name": "re-mmogo-2-0",
+  "name": "re-mmogo-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.16.0",
+    "axios": "^1.15.2",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-hook-form": "^7.75.0",
     "react-router-dom": "^7.14.2"
   },
   "devDependencies": {

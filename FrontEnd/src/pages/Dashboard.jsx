@@ -8,7 +8,8 @@ const initialGroup = {
   description: "",
   year: new Date().getFullYear(),
   interest_rate: 20,
-  monthly_contrib: 0,
+  monthly_contrib: 1000,
+  target_interest: 5000,
 };
 
 export default function Dashboard() {
@@ -67,8 +68,9 @@ export default function Dashboard() {
         group_name: form.group_name,
         description: form.description,
         year: Number(form.year) || new Date().getFullYear(),
-        interest_rate: Number(form.interest_rate) || 0,
-        monthly_contrib: Number(form.monthly_contrib) || 0,
+        interest_rate: Number(form.interest_rate) || 20,
+        monthly_contrib: Number(form.monthly_contrib) || 1000,
+        target_interest: Number(form.target_interest) || 5000,
       });
 
       setForm(initialGroup);
@@ -280,7 +282,7 @@ export default function Dashboard() {
               </div>
 
               <div className="field">
-                <label htmlFor="interest_rate">INTEREST RATE</label>
+                <label htmlFor="interest_rate">INTEREST RATE (% / MONTH ON BALANCE)</label>
                 <input
                   id="interest_rate"
                   type="number"
@@ -290,6 +292,22 @@ export default function Dashboard() {
                     setForm((prev) => ({
                       ...prev,
                       interest_rate: Number(e.target.value),
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="target_interest">TARGET INTEREST / MEMBER / YEAR (BWP)</label>
+                <input
+                  id="target_interest"
+                  type="number"
+                  required
+                  value={form.target_interest}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      target_interest: Number(e.target.value),
                     }))
                   }
                 />

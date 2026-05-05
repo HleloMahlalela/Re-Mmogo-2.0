@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "../db/pool.js";
+import asyncHandler from "../middleware/asyncHandler.js";
 
 const router = express.Router();
 const jwtSecret = process.env.JWT_SECRET || "super-secret-change-me";
@@ -15,7 +16,7 @@ function publicUser(user) {
   };
 }
 
-router.post("/register", async (req, res) => {
+router.post("/register", asyncHandler(async (req, res) => {
   const { full_name, email, phone, password } = req.body || {};
   if (!full_name || !email || !password) {
     return res.status(400).json({ message: "full_name, email and password are required." });
@@ -44,9 +45,9 @@ router.post("/register", async (req, res) => {
     [result.insertId]
   );
   return res.status(201).json({ message: "Registration successful.", user: users[0] });
-});
+}));
 
-router.post("/login", async (req, res) => {
+router.post("/login", asyncHandler(async (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ message: "email and password are required." });
@@ -68,6 +69,6 @@ router.post("/login", async (req, res) => {
     expiresIn: "7d",
   });
   return res.json({ token, user: publicUser(user) });
-});
+}));
 
 export default router;
