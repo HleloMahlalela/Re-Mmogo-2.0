@@ -12,14 +12,22 @@ import approvalRoutes from "./routes/approvalRoutes.js";
 const app = express();
 const port = Number(process.env.PORT || 5000);
 
-const corsOrigins = [process.env.CORS_ORIGIN, "http://localhost:5173"].filter(Boolean);
-app.use(
-  cors({
-    origin: corsOrigins.length ? corsOrigins : true,
-    credentials: true,
-  })
-);
+const corsOrigins = [
+  "http://localhost:5173",
+  "https://re-mmogo-2-0.vercel.app",
+  process.env.CORS_ORIGIN
+].filter(Boolean);
 
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || corsOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
