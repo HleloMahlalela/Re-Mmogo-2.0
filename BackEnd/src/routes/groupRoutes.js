@@ -290,7 +290,7 @@ router.get(
           await persistAccruedLoan(pool, row.loan_id);
         } catch (err) {
           console.error(
-            `❌ Accrual failed for loan ${row.loan_id}:`,
+            `Accrual failed for loan ${row.loan_id}:`,
             err.message
           );
           // continue instead of crashing everything
