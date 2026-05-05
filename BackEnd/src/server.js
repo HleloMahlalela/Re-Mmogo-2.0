@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 
@@ -8,6 +11,7 @@ import loanRoutes from "./routes/loanRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import authRequired from "./middleware/authRequired.js";
 import approvalRoutes from "./routes/approvalRoutes.js";
+
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
