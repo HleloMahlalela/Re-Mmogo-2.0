@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const defaultApiBaseUrl = "https://re-mmogo-2-0.onrender.com/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || defaultApiBaseUrl,
 });
 
 api.interceptors.request.use((config) => {
