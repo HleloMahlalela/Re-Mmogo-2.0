@@ -40,11 +40,6 @@ export default function Reports() {
           ? `${report.group_name} · FY ${report.year}`
           : `Group · ${groupId}`
       }
-      actions={
-        <button className="primary-btn" type="button" disabled title="Not implemented yet">
-          Download PDF
-        </button>
-      }
     >
       {error ? <p className="error-text">{error}</p> : null}
       {loading ? (
@@ -52,8 +47,8 @@ export default function Reports() {
       ) : report ? (
         <>
           <section className="kpi-banner">
-            <h2 style={{ margin: 0, fontSize: 32 }}>Financial summary</h2>
-            <p style={{ margin: "2px 0 0", opacity: 0.6 }}>
+            <h2 className="report-kpi-title">Financial summary</h2>
+            <p className="report-kpi-meta">
               {report.group_name} · {report.member_count} active member(s) · FY {report.year}
             </p>
             <div className="kpi-grid">
@@ -76,15 +71,15 @@ export default function Reports() {
                 <p>Avg pool share / member</p>
               </div>
             </div>
-            <p style={{ margin: "14px 0 0", opacity: 0.75, fontSize: 13 }}>
+            <p className="report-kpi-detail">
               Top contributor: <strong>{report.top_contributor}</strong> · Lowest:{" "}
               <strong>{report.lowest_contributor}</strong>
             </p>
-            <p style={{ margin: "8px 0 0", opacity: 0.75, fontSize: 13 }}>
+            <p className="report-kpi-detail">
               Most loan repayments (FY): <strong>{report.top_loan_payer}</strong> · Least:{" "}
               <strong>{report.lowest_loan_payer}</strong>
             </p>
-            <p style={{ margin: "8px 0 0", opacity: 0.75, fontSize: 13 }}>
+            <p className="report-kpi-detail">
               Monthly contribution rule: P{Number(report.monthly_contrib || 0).toLocaleString()} ·
               Interest target / member / year: P{Number(report.target_interest || 0).toLocaleString()}{" "}
               · Loan rate: {Number(report.interest_rate || 0)}% on balance / month
@@ -134,12 +129,9 @@ export default function Reports() {
             </article>
           </section>
 
-          <section className="table-card">
+          <section className="table-card member-report-table">
             <div className="table-head">
               <strong>Member contribution totals (approved)</strong>
-              <button className="secondary-btn" type="button" disabled title="Not implemented yet">
-                Export CSV
-              </button>
             </div>
             {memberTotals.length === 0 ? (
               <p className="muted" style={{ padding: "16px", margin: 0 }}>

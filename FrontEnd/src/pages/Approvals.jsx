@@ -14,6 +14,12 @@ function typeLabel(kind) {
   return "LOAN REPAYMENT";
 }
 
+function voteClass(decision) {
+  if (decision === "APPROVED") return "green";
+  if (decision === "REJECTED") return "red";
+  return "yellow";
+}
+
 export default function Approvals() {
   const [data, setData] = useState({ contributions: [], loans: [], repayments: [] });
   const [error, setError] = useState("");
@@ -59,6 +65,7 @@ export default function Approvals() {
         ["PROOF", row.proof_of_payment || "—"],
         ["REQUESTED", formatWhen(row.initiated_at)],
       ],
+      signatoryVotes: row.signatory_votes || [],
     }));
     const l = (data.loans || []).map((row) => ({
       key: `loan-${row.loan_id}`,
@@ -75,6 +82,7 @@ export default function Approvals() {
         ["OUTSTANDING", `P${Number(row.outstanding || 0).toLocaleString()}`],
         ["REQUESTED", formatWhen(row.requested_at)],
       ],
+      signatoryVotes: row.signatory_votes || [],
     }));
     const r = (data.repayments || []).map((row) => ({
       key: `repayment-${row.repayment_id}`,
@@ -92,6 +100,7 @@ export default function Approvals() {
         ["PROOF", row.proof_of_payment || "—"],
         ["REQUESTED", formatWhen(row.initiated_at)],
       ],
+      signatoryVotes: row.signatory_votes || [],
     }));
     return [...c, ...l, ...r].sort(
       (a, b) => new Date(b.when || 0).getTime() - new Date(a.when || 0).getTime()
@@ -185,6 +194,14 @@ export default function Approvals() {
                     {field[0]}
                   </div>
                   <div style={{ fontWeight: 600, marginTop: 6 }}>{field[1]}</div>
+                </div>
+              ))}
+            </div>
+            <div className="signatory-votes">
+              {(item.signatoryVotes || []).map((vote) => (
+                <div className="signatory-vote-row" key={`${item.key}-${vote.signatory_id}`}>
+                  <span className="muted">{vote.signatory_name}</span>
+                  <span className={`pill ${voteClass(vote.decision)}`}>{vote.decision}</span>
                 </div>
               ))}
             </div>

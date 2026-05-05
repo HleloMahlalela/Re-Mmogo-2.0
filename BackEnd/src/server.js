@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import express from "express";
 import cors from "cors";
 
@@ -12,37 +9,13 @@ import reportRoutes from "./routes/reportRoutes.js";
 import authRequired from "./middleware/authRequired.js";
 import approvalRoutes from "./routes/approvalRoutes.js";
 
-
 const app = express();
 const port = Number(process.env.PORT || 5000);
 
-const normalizeOrigin = (origin) => origin.replace(/\/+$/, "");
-const corsOrigins = [
-  process.env.CORS_ORIGIN,
-  process.env.CORS_ORIGINS,
-  "https://re-mmogo-2-0.vercel.app",
-]
-  .filter(Boolean)
-  .flatMap((value) => value.split(","))
-  .map((origin) => normalizeOrigin(origin.trim()))
-  .filter(Boolean);
-
+const corsOrigins = [process.env.CORS_ORIGIN, "http://localhost:5173"].filter(Boolean);
 app.use(
   cors({
-    origin(origin, callback) {
-      if (!origin || !corsOrigins.length) {
-        callback(null, true);
-        return;
-      }
-
-      const normalizedOrigin = normalizeOrigin(origin);
-      if (corsOrigins.includes(normalizedOrigin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
+    origin: corsOrigins.length ? corsOrigins : true,
     credentials: true,
   })
 );

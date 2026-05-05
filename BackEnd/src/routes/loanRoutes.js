@@ -101,7 +101,12 @@ router.post(
         ]);
       } else {
         const nextOut = Math.max(0, Number((curOut - pay).toFixed(2)));
-        await pool.query("UPDATE Loans SET outstanding = ? WHERE loan_id = ?", [nextOut, loanId]);
+        const loanStatus = nextOut === 0 ? "PAID" : "APPROVED";
+        await pool.query("UPDATE Loans SET outstanding = ?, status = ? WHERE loan_id = ?", [
+          nextOut,
+          loanStatus,
+          loanId,
+        ]);
       }
     }
 
@@ -216,17 +221,22 @@ router.post(
       return res.json(rows[0]);
     }
 
+    const [groupRows] = await pool.query("SELECT interest_rate FROM MotsheloGroups WHERE group_id = ?", [
+      loan.group_id,
+    ]);
+    const groupInterestRate = Number(groupRows[0]?.interest_rate ?? 20);
+    const openingOutstanding = Number((Number(loan.principal) * (1 + groupInterestRate / 100)).toFixed(2));
     const disbursedAt = new Date();
     const nextAccrual = firstDayOfNextMonthUtc(disbursedAt);
     const nextStr = formatYmdUtc(nextAccrual);
     await pool.query(
       `UPDATE Loans
        SET status = 'APPROVED',
-           outstanding = principal,
+           outstanding = ?,
            disbursed_at = ?,
            next_accrual_date = ?
        WHERE loan_id = ?`,
-      [disbursedAt, nextStr, loanId]
+      [openingOutstanding, disbursedAt, nextStr, loanId]
     );
 
     const [rows] = await pool.query("SELECT * FROM Loans WHERE loan_id = ?", [loanId]);

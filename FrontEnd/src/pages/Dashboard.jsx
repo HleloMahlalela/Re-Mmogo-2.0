@@ -95,23 +95,17 @@ export default function Dashboard() {
         year: "numeric",
       })}
       actions={
-        <>
-          <button className="secondary-btn" type="button">
-            Export
-          </button>
-
-          <button
-            className="primary-btn"
-            type="button"
-            onClick={() => {
-              setError("");
-              setShowForm(true);
-            }}
-            disabled={loading}
-          >
-            + New Group
-          </button>
-        </>
+        <button
+          className="primary-btn"
+          type="button"
+          onClick={() => {
+            setError("");
+            setShowForm(true);
+          }}
+          disabled={loading}
+        >
+          + New Group
+        </button>
       }
     >
       <section className="stats-grid">

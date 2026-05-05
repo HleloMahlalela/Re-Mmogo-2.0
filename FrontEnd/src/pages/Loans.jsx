@@ -11,6 +11,7 @@ export default function Loans() {
   const [repayments, setRepayments] = useState([]);
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState("");
+  const [isLoanModalOpen, setIsLoanModalOpen] = useState(false);
   const [form, setForm] = useState({ principal: 1000, notes: "" });
   const [repayForm, setRepayForm] = useState({ loanId: "", amount: "", proof_of_payment: "", notes: "" });
 
@@ -66,6 +67,7 @@ export default function Loans() {
       });
       setForm({ principal: 1000, notes: "" });
       await loadLoans();
+      setIsLoanModalOpen(false);
     } catch (err) {
       setError(err.response?.data?.message || "Loan request failed.");
     }
@@ -107,7 +109,7 @@ export default function Loans() {
           : `Group · ${groupId}`
       }
       actions={
-        <button className="primary-btn" type="submit" form="loan-form">
+        <button className="primary-btn" type="button" onClick={() => setIsLoanModalOpen(true)}>
           + Request Loan
         </button>
       }
@@ -126,19 +128,29 @@ export default function Loans() {
                       <h4 style={{ margin: 0, fontSize: 20 }}>{loan.full_name || "Borrower"}</h4>
                       <p className="muted" style={{ marginTop: 3 }}>
                         LOAN-{loan.loan_id} ·{" "}
-                        {loan.status === "PENDING" ? "Awaiting two signatories" : loan.status}
+                        {loan.status === "PENDING"
+                          ? "Awaiting two signatories"
+                          : loan.status === "PAID"
+                            ? "Fully repaid"
+                            : loan.status}
                       </p>
                     </div>
                     <span
                       className={`pill ${
                         loan.status === "REJECTED"
                           ? "red"
+                          : loan.status === "PAID"
+                            ? "green"
                           : loan.status === "PENDING"
                             ? "yellow"
                             : "green"
                       }`}
                     >
-                      {loan.status === "APPROVED" ? "Active" : loan.status}
+                      {loan.status === "APPROVED"
+                        ? "Active"
+                        : loan.status === "PAID"
+                          ? "Paid"
+                          : loan.status}
                     </span>
                   </div>
                   <div className="group-stats">
@@ -199,54 +211,7 @@ export default function Loans() {
         </section>
 
         <section className="form-card">
-          <div className="form-card-header">Request a Loan</div>
-          <form className="form-card-body" id="loan-form" onSubmit={requestLoan}>
-            <p className="small-label">GROUP</p>
-            <input value={group?.group_name || "—"} readOnly />
-            <p className="small-label">LOAN AMOUNT (BWP)</p>
-            <input
-              id="principal"
-              type="number"
-              min={1}
-              required
-              value={form.principal}
-              onChange={(e) => setForm((p) => ({ ...p, principal: e.target.value }))}
-            />
-            <p className="small-label">PURPOSE / NOTES</p>
-            <input
-              id="notes"
-              required
-              value={form.notes}
-              onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
-            />
-            <div className="soft-box" style={{ marginTop: 12 }}>
-              <p className="small-label" style={{ marginTop: 0, color: "#2E5E32" }}>
-                BALANCE GROWS {interestPct}% / MONTH (APPROVED LOANS)
-              </p>
-              <div className="muted">
-                Principal: P{Number(form.principal || 0).toLocaleString()}
-              </div>
-              <div className="muted">
-                After 1 month: P
-                {Math.round(Number(form.principal || 0) * rateFactor).toLocaleString()}
-              </div>
-              <div className="muted">
-                After 2 months: P
-                {Math.round(Number(form.principal || 0) * rateFactor ** 2).toLocaleString()}
-              </div>
-            </div>
-            <button className="primary-btn" style={{ width: "100%", marginTop: 14 }} type="submit">
-              Submit Loan Request
-            </button>
-            <p className="muted" style={{ textAlign: "center", marginBottom: 0 }}>
-              Two signatories must approve before the loan is active.
-            </p>
-            <p className="muted">
-              <Link to={`/groups/${groupId}`}>Back to group</Link>
-            </p>
-          </form>
-
-          <form className="form-card-body" style={{ borderTop: "1px solid #e8ece9" }} onSubmit={submitRepayment}>
+          <form className="form-card-body" onSubmit={submitRepayment}>
               <div className="form-card-header" style={{ margin: "0 -20px 12px", paddingTop: 8 }}>
                 Record loan repayment
               </div>
@@ -306,6 +271,70 @@ export default function Loans() {
           </form>
         </section>
       </div>
+      {isLoanModalOpen ? (
+        <div className="modal-overlay" onClick={() => setIsLoanModalOpen(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Request a Loan</h3>
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => setIsLoanModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+            <form className="field-grid" onSubmit={requestLoan}>
+              <div className="field">
+                <label htmlFor="loan-group">GROUP</label>
+                <input id="loan-group" value={group?.group_name || "—"} readOnly />
+              </div>
+              <div className="field">
+                <label htmlFor="principal">LOAN AMOUNT (BWP)</label>
+                <input
+                  id="principal"
+                  type="number"
+                  min={1}
+                  required
+                  value={form.principal}
+                  onChange={(e) => setForm((p) => ({ ...p, principal: e.target.value }))}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="notes">PURPOSE / NOTES</label>
+                <textarea
+                  id="notes"
+                  rows={2}
+                  required
+                  value={form.notes}
+                  onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+                />
+              </div>
+              <div className="soft-box">
+                <p className="small-label" style={{ marginTop: 0, color: "#2E5E32" }}>
+                  STARTING OUTSTANDING INCLUDES GROUP INTEREST ({interestPct}%)
+                </p>
+                <div className="muted">
+                  Principal: P{Number(form.principal || 0).toLocaleString()}
+                </div>
+                <div className="muted">
+                  At approval: P
+                  {Math.round(Number(form.principal || 0) * rateFactor).toLocaleString()}
+                </div>
+              </div>
+              <button className="primary-btn" style={{ width: "100%" }} type="submit">
+                Submit Loan Request
+              </button>
+              <p className="muted" style={{ margin: 0 }}>
+                Two signatories must approve before the loan is active.
+              </p>
+              <p className="muted" style={{ margin: 0 }}>
+                <Link to={`/groups/${groupId}`}>Back to group</Link>
+              </p>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </AppLayout>
   );
 }

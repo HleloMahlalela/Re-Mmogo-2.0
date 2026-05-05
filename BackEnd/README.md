@@ -4,22 +4,12 @@ Node/Express backend scaffold matching the frontend API in this workspace.
 
 ## Run
 
-1. `cd BackEnd`
+1. `cd re-mmogo-backend`
 2. `npm install`
 3. Copy `.env.example` to `.env` and update values (JWT + MySQL `remmogodb` connection).
 4. `npm run dev`
 
 Server starts on `http://localhost:5000` and exposes routes under `/api`.
-
-## Deployment env
-
-For Render deployment, set at least:
-
-- `JWT_SECRET`
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
-- `CORS_ORIGIN=https://re-mmogo-2-0.vercel.app`
-
-You can use `CORS_ORIGINS` for multiple frontend origins (comma separated).
 
 ## Database
 
