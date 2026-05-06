@@ -73,9 +73,92 @@
   font-size: 13px;
 }
 
+.register-layout {
+  grid-template-columns: minmax(360px, 560px) 1fr;
+}
+
+.register-hero-title {
+  font-size: 56px;
+}
+
+.register-steps {
+  margin-top: 70px;
+  display: grid;
+  gap: 24px;
+}
+
 @media (max-width: 1200px) {
   .auth-layout {
     grid-template-columns: 1fr;
+  }
+
+  .register-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 992px) {
+  .auth-hero {
+    padding: 56px 24px;
+  }
+
+  .auth-hero h1 {
+    font-size: 46px;
+  }
+
+  .auth-metrics {
+    position: static;
+    margin-top: 28px;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    gap: 16px;
+  }
+
+  .auth-form-panel {
+    padding: 48px 24px;
+  }
+
+  .auth-form-panel h2 {
+    font-size: 36px;
+  }
+
+  .register-hero-title {
+    font-size: 42px;
+  }
+
+  .register-steps {
+    margin-top: 28px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-hero h1 {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .auth-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-metrics strong {
+    font-size: 30px;
+  }
+
+  .auth-form-panel h2 {
+    font-size: 28px;
+  }
+
+  .register-hero-title {
+    font-size: 32px;
+    line-height: 1.1;
+  }
+
+  .register-steps {
+    margin-top: 18px;
+    gap: 10px;
   }
 }
 

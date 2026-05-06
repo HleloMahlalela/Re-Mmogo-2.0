@@ -28,8 +28,9 @@ export default function Reports() {
 
   const monthly = report?.monthly_contributions || [];
   const memberTotals = report?.member_contribution_totals || [];
-  const maxMonthly = Math.max(...monthly.map((m) => m.total), 0, 1);
-  const maxMember = Math.max(...memberTotals.map((m) => m.total_contributions), 0, 1);
+  const interestProgress = report?.interest_progress || [];
+  const maxMonthly = Math.max(...monthly.map((m) => Number(m.total) || 0), 0, 1);
+  const maxMember = Math.max(...memberTotals.map((m) => Number(m.total_contributions) || 0), 0, 1);
 
   return (
     <AppLayout
@@ -39,11 +40,6 @@ export default function Reports() {
           ? `${report.group_name} · FY ${report.year}`
           : `Group · ${groupId}`
       }
-      actions={
-        <button className="primary-btn" type="button" disabled title="Not implemented yet">
-          Download PDF
-        </button>
-      }
     >
       {error ? <p className="error-text">{error}</p> : null}
       {loading ? (
@@ -51,8 +47,8 @@ export default function Reports() {
       ) : report ? (
         <>
           <section className="kpi-banner">
-            <h2 style={{ margin: 0, fontSize: 32 }}>Financial summary</h2>
-            <p style={{ margin: "2px 0 0", opacity: 0.6 }}>
+            <h2 className="report-kpi-title">Financial summary</h2>
+            <p className="report-kpi-meta">
               {report.group_name} · {report.member_count} active member(s) · FY {report.year}
             </p>
             <div className="kpi-grid">
@@ -61,8 +57,10 @@ export default function Reports() {
                 <p>Total contributions (approved)</p>
               </div>
               <div>
-                <strong>P{Number(report.total_interest || 0).toLocaleString()}</strong>
-                <p>Interest (approved loans)</p>
+                <strong>
+                  P{Number(report.total_loan_repayments || report.total_interest || 0).toLocaleString()}
+                </strong>
+                <p>Approved loan repayments (FY)</p>
               </div>
               <div>
                 <strong>P{Number(report.pool_value || 0).toLocaleString()}</strong>
@@ -73,9 +71,18 @@ export default function Reports() {
                 <p>Avg pool share / member</p>
               </div>
             </div>
-            <p style={{ margin: "14px 0 0", opacity: 0.75, fontSize: 13 }}>
+            <p className="report-kpi-detail">
               Top contributor: <strong>{report.top_contributor}</strong> · Lowest:{" "}
               <strong>{report.lowest_contributor}</strong>
+            </p>
+            <p className="report-kpi-detail">
+              Most loan repayments (FY): <strong>{report.top_loan_payer}</strong> · Least:{" "}
+              <strong>{report.lowest_loan_payer}</strong>
+            </p>
+            <p className="report-kpi-detail">
+              Monthly contribution rule: P{Number(report.monthly_contrib || 0).toLocaleString()} ·
+              Interest target / member / year: P{Number(report.target_interest || 0).toLocaleString()}{" "}
+              · Loan rate: {Number(report.interest_rate || 0)}% on balance / month
             </p>
           </section>
 
@@ -94,7 +101,7 @@ export default function Reports() {
                       style={{
                         height: `${Math.max(4, (row.total / maxMonthly) * 140)}px`,
                       }}
-                      title={`${row.month_label}: P${row.total.toLocaleString()}`}
+                      title={`${row.month_label}: P${Number(row.total).toLocaleString()}`}
                     />
                   ))}
                 </div>
@@ -122,12 +129,9 @@ export default function Reports() {
             </article>
           </section>
 
-          <section className="table-card">
+          <section className="table-card member-report-table">
             <div className="table-head">
               <strong>Member contribution totals (approved)</strong>
-              <button className="secondary-btn" type="button" disabled title="Not implemented yet">
-                Export CSV
-              </button>
             </div>
             {memberTotals.length === 0 ? (
               <p className="muted" style={{ padding: "16px", margin: 0 }}>
@@ -138,21 +142,24 @@ export default function Reports() {
                 <div className="payout-row muted" style={{ fontWeight: 600, fontSize: 11 }}>
                   <span>#</span>
                   <span>Member</span>
-                  <span>Approved contributions</span>
-                  <span>—</span>
-                  <span>—</span>
-                  <span>—</span>
+                  <span>Contributions (FY)</span>
+                  <span>Est. equal payout</span>
+                  <span>Loan repay (FY)</span>
+                  <span>Target met</span>
                 </div>
-                {memberTotals.map((row, idx) => (
-                  <div className="payout-row" key={`${row.full_name}-${idx}`}>
-                    <span>{idx + 1}</span>
-                    <span>{row.full_name}</span>
-                    <span>P{Number(row.total_contributions || 0).toLocaleString()}</span>
-                    <span>—</span>
-                    <span>—</span>
-                    <span>—</span>
-                  </div>
-                ))}
+                {memberTotals.map((row, idx) => {
+                  const ip = interestProgress.find((x) => x.full_name === row.full_name);
+                  return (
+                    <div className="payout-row" key={`${row.full_name}-${idx}`}>
+                      <span>{idx + 1}</span>
+                      <span>{row.full_name}</span>
+                      <span>P{Number(row.total_contributions || 0).toLocaleString()}</span>
+                      <span>P{Number(row.estimated_payout_share || 0).toLocaleString()}</span>
+                      <span>P{Number(ip?.payments_toward_loans || 0).toLocaleString()}</span>
+                      <span>{ip?.met_target ? "Yes" : "No"}</span>
+                    </div>
+                  );
+                })}
               </>
             )}
           </section>

@@ -86,6 +86,7 @@ export default function AppLayout({
   );
 }
  */
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./AppLayout.css";
@@ -117,6 +118,7 @@ export default function AppLayout({
 }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Safer initials logic
   const initials = user?.full_name
@@ -137,10 +139,27 @@ export default function AppLayout({
     }
   };
 
+  const handleMenuToggle = () => {
+    setIsMenuOpen((prev) => !prev);
+  };
+
+  const handleNavClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <div className="screen">
+      {isMenuOpen ? (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          aria-label="Close navigation menu"
+          onClick={handleMenuToggle}
+        />
+      ) : null}
+
       {/* SIDEBAR */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${isMenuOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
           <h3>Re-Mmogo</h3>
           <p>Savings Platform</p>
@@ -161,6 +180,7 @@ export default function AppLayout({
                 className={({ isActive }) =>
                   isActive ? "nav-link active" : "nav-link"
                 }
+                onClick={handleNavClick}
               >
                 <span className="dot" />
                 {item.label}
@@ -194,6 +214,15 @@ export default function AppLayout({
       {/* MAIN */}
       <div className="main">
         <header className="main-header">
+          <button
+            type="button"
+            className="menu-btn"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            onClick={handleMenuToggle}
+          >
+            {isMenuOpen ? "X" : "☰"}
+          </button>
+
           <div>
             <h1>{title}</h1>
             {subtitle && <p>{subtitle}</p>}

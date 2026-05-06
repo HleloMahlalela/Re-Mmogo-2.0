@@ -35,14 +35,14 @@ export default function Register() {
   };
 
   return (
-    <main className="auth-layout" style={{ gridTemplateColumns: "560px 1fr" }}>
+    <main className="auth-layout register-layout">
       <section className="auth-hero">
-        <h1 style={{ fontSize: 56 }}>
+        <h1 className="register-hero-title">
           Create your
           <br />
           account
         </h1>
-        <div style={{ marginTop: 70, display: "grid", gap: 24 }}>
+        <div className="register-steps">
           <p>1 Create your personal account with secure credentials</p>
           <p>2 Register or join an existing Motshelo group</p>
           <p>3 Start recording contributions and managing loans</p>

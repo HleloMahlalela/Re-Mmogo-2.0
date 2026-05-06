@@ -8,19 +8,26 @@ export default function Contributions() {
   const [items, setItems] = useState([]);
   const [groups, setGroups] = useState([]);
   const [error, setError] = useState("");
-  
-  const now = new Date();
 
-  const formattedDate = `${now.getFullYear()}-${String(
-    now.getMonth() + 1
-  ).padStart(2, "0")}-01`;
+  const now = new Date();
+  const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
   const [form, setForm] = useState({
     amount: 1000,
     contribution_month: formattedDate,
+    proof_of_payment: "",
   });
 
   const group = groups.find((g) => String(g.group_id) === String(groupId));
+
+  useEffect(() => {
+    if (group?.monthly_contrib != null) {
+      setForm((prev) => ({
+        ...prev,
+        amount: Number(group.monthly_contrib),
+      }));
+    }
+  }, [group?.group_id, group?.monthly_contrib]);
 
   const loadGroups = async () => {
     try {
@@ -59,12 +66,15 @@ export default function Contributions() {
         group_id: Number(groupId),
         amount: Number(form.amount),
         contribution_month: form.contribution_month,
+        proof_of_payment: form.proof_of_payment?.trim() || null,
       });
       await load();
     } catch (err) {
       setError(err.response?.data?.message || "Could not submit contribution.");
     }
   };
+
+  const expected = Number(group?.monthly_contrib ?? 1000);
 
   return (
     <AppLayout
@@ -99,9 +109,7 @@ export default function Contributions() {
                     <div className="avatar">{initials || "?"}</div>
                     <div>
                       <div style={{ fontWeight: 600, fontSize: 12 }}>{name}</div>
-                      <div className="muted">
-                        {item.contribution_month || "—"}
-                      </div>
+                      <div className="muted">{item.contribution_month || "—"}</div>
                     </div>
                   </div>
                   <div>
@@ -109,12 +117,13 @@ export default function Contributions() {
                       P{Number(item.amount || 0).toLocaleString()}
                     </div>
                     <span
-                      className={`pill ${item.status === "APPROVED"
+                      className={`pill ${
+                        item.status === "APPROVED"
                           ? "green"
                           : item.status === "REJECTED"
                             ? "red"
                             : "yellow"
-                        }`}
+                      }`}
                     >
                       {item.status || "PENDING"}
                     </span>
@@ -146,16 +155,24 @@ export default function Contributions() {
                 setForm((prev) => ({ ...prev, amount: Number(e.target.value) }))
               }
             />
+            <p className="muted" style={{ marginTop: 0, fontSize: 12 }}>
+              This group requires exactly P{expected.toLocaleString()} per month.
+            </p>
             <p className="small-label">PROOF OF PAYMENT</p>
-            <div className="soft-box" style={{ textAlign: "center", padding: "18px 0" }}>
-              <div className="muted">Upload is not wired yet.</div>
-              <div className="muted">Add a file field when the API accepts uploads.</div>
-            </div>
+            <textarea
+              rows={3}
+              placeholder="e.g. bank ref, receipt number, or link to proof"
+              value={form.proof_of_payment}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, proof_of_payment: e.target.value }))
+              }
+              style={{ width: "100%", resize: "vertical" }}
+            />
             <button className="primary-btn" style={{ width: "100%", marginTop: 14 }} type="submit">
               Submit Contribution
             </button>
             <p className="muted" style={{ textAlign: "center" }}>
-              Signatories will be notified to approve.
+              Two signatories must approve before this is recorded as paid.
             </p>
           </form>
         </section>
