@@ -1,5 +1,12 @@
 # Re-Mmogo - Motshelo Group Loan Tracker
 
+##GROUP MEMBERS
+  1.Lefa Ramonameng-24020066
+  2.Amantle Mwangi-24019718
+  3.Thuo Malope-24109366
+  4.Lethukuthula Shongwe -24020138 
+  5.Hlelolenkosi Mahlalela -24020091
+
 ## Description
 
 Re-Mmogo is a full-stack web application designed to help Motshelo (savings group) members track loans, contributions, and group finances. Members can register and log in, create or join savings groups, record monthly contributions, apply for loans, and have signatories approve or reject transactions. The app provides a real-time dashboard with group summaries and a full approvals workflow.
